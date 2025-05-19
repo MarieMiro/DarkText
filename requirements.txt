@@ -1,1 +1,6 @@
+openai
+python-telegram-bot
+Flask
+python-dotenv
+
 
