@@ -1,46 +1,34 @@
 import os
-from dotenv import load_dotenv
 from flask import Flask, request
-import openai
 from telegram import Bot, Update
-from telegram.ext import Dispatcher, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from dotenv import load_dotenv
 
 load_dotenv()
 
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+bot = Bot(token=TOKEN)
 
-bot = Bot(token=TELEGRAM_BOT_TOKEN)
 app = Flask(__name__)
 
-openai.api_key = OPENAI_API_KEY
-
-def handle_message(update, context):
-    user_message = update.message.text
-    response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=user_message,
-        max_tokens=150,
-        temperature=0.7,
-    )
-    reply = response.choices[0].text.strip()
-    update.message.reply_text(reply)
+updater = Updater(token=TOKEN, use_context=True)
+dispatcher = updater.dispatcher
 
 def start(update, context):
-    update.message.reply_text("Привет! Я хоррор-чатбот. Готов пройти страшную переписку?")
+    update.message.reply_text("Привет! Это хоррор-чат бот.")
 
-dispatcher = Dispatcher(bot, None, workers=0)
+def handle_text(update, context):
+    user_message = update.message.text
+    update.message.reply_text(f"Ты написал: {user_message}")
+
 dispatcher.add_handler(CommandHandler("start", start))
-dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
+dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_text))
 
-@app.route('/webhook', methods=['POST'])
+@app.route("/webhook", methods=["POST"])
 def webhook():
-    update = Update.de_json(request.get_json(), bot)
-    dispatcher.process_update(update)
+    update = Update.de_json(request.get_json(force=True), bot)
+    updater.dispatcher.process_update(update)
     return "ok"
 
-if __name__ == "__main__":
-  app.run(host="0.0.0.0", port=10000)
-
-
-
+if name == "__main__":
+    app.run(host="0.0.0.0", port=10000)
