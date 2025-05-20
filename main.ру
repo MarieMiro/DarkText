@@ -27,7 +27,7 @@ def handle_message(update, context):
     update.message.reply_text(reply)
 
 def start(update, context):
-    update.message.reply_text("Привет! Я хоррор-чатбот. Готов поиграть?")
+    update.message.reply_text("Привет! Я хоррор-чатбот. Готов пройти страшную переписку?")
 
 dispatcher = Dispatcher(bot, None, workers=0)
 dispatcher.add_handler(CommandHandler("start", start))
@@ -39,6 +39,6 @@ def webhook():
     dispatcher.process_update(update)
     return "ok"
 
-if name == "__main__":
+if __name__ == "__main__":
     app.run(port=5000)
 
